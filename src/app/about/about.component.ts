@@ -12,15 +12,5 @@ import { createHttpObservable } from "../common/util";
 export class AboutComponent implements OnInit {
   constructor() {}
 
-  ngOnInit() {
-    const http$ = createHttpObservable("/api/courses");
-
-    const courses$ = http$.pipe(map((res) => Object.values(res["payload"])));
-
-    courses$.subscribe(
-      (courses) => console.log(courses),
-      noop, // () => {},  we can use noop instead of empty callback
-      () => console.log("completed")
-    );
-  }
+  ngOnInit() {}
 }
