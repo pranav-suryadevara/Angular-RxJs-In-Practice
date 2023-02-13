@@ -17,22 +17,32 @@ import { createHttpObservable } from "../common/util";
   styleUrls: ["./home.component.css"],
 })
 export class HomeComponent implements OnInit {
-  beginnerCourses: Course[];
-  advancedCourses: Course[];
+  beginnerCourses$: Observable<Course[]>;
+  advancedCourses$: Observable<Course[]>;
 
   ngOnInit() {
     const http$ = createHttpObservable("/api/courses");
 
-    const courses$ = http$.pipe(map((res) => Object.values(res["payload"])));
+    const courses$: Observable<Course[]> = http$.pipe(
+      map((res) => Object.values(res["payload"]))
+    );
+
+    this.beginnerCourses$ = courses$.pipe(
+      map((courses) =>
+        courses.filter((course) => course.category === "BEGINNER")
+      )
+    );
+
+    this.advancedCourses$ = courses$.pipe(
+      map(
+        (
+          courses: Course[] // good practice to have the type definitions where ever possible.
+        ) => courses.filter((course) => course.category === "ADVANCED")
+      )
+    );
 
     courses$.subscribe(
       (courses) => {
-        this.beginnerCourses = courses.filter(
-          (course) => course.category === "BEGINNER"
-        );
-        this.advancedCourses = courses.filter(
-          (course) => course.category === "ADVANCED"
-        );
         console.log(courses);
       },
       noop, // () => {},  we can use noop instead of empty callback
