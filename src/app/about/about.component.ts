@@ -12,7 +12,12 @@ export class AboutComponent implements OnInit {
   ngOnInit() {
     const interval$ = interval(1000);
 
-    interval$.subscribe((val) => console.log("stream 1 => " + val));
+    const sub = interval$.subscribe((val) => console.log("stream 1 => " + val));
+
+    // unsubscribing to a stream
+    setTimeout(() => {
+      sub.unsubscribe();
+    }, 10000);
 
     interval$.subscribe((val) => console.log("stream 2 => " + val));
 
@@ -22,6 +27,10 @@ export class AboutComponent implements OnInit {
 
     const clicks$ = fromEvent(document, "click");
 
-    clicks$.subscribe((event) => console.log(event));
+    clicks$.subscribe(
+      (event) => console.log(event), // stream data
+      (err) => console.log(err), // error handling
+      () => console.log("completed") // completion of stream
+    );
   }
 }
