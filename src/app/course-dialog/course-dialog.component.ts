@@ -49,7 +49,39 @@ export class CourseDialogComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // this.form.valueChanges.subscribe(console.log);
+
+    // implementation without the use of an observable.
+    // this.form.valueChanges
+    //   .pipe(filter(() => this.form.valid))
+    //   .subscribe((changes) => {
+    //     fetch(`/api/courses/${this.course.id}`, {
+    //       method: "PUT",
+    //       body: JSON.stringify(changes),
+    //       headers: {
+    //         "content-type": "application/json",
+    //       },
+    //     }).then();
+    //   });
+
+    //observable implementation.
+    this.form.valueChanges
+      .pipe(filter(() => this.form.valid))
+      .subscribe((changes) => {
+        const saveCourses$ = fromPromise(
+          fetch(`/api/courses/${this.course.id}`, {
+            method: "PUT",
+            body: JSON.stringify(changes),
+            headers: {
+              "content-type": "application/json",
+            },
+          })
+        );
+
+        saveCourses$.subscribe();
+      });
+  }
 
   ngAfterViewInit() {}
 
