@@ -53,8 +53,7 @@ export class CourseDialogComponent implements OnInit, AfterViewInit {
     this.form.valueChanges
       .pipe(
         filter(() => this.form.valid),
-        // mergeMap((changes) => this.saveCourses(changes))
-        concatMap((changes) => this.saveCourses(changes)) // we use concatMap here as the order of save is important for us here.
+        concatMap((changes) => this.saveCourses(changes))
       )
       .subscribe();
   }
@@ -71,7 +70,11 @@ export class CourseDialogComponent implements OnInit, AfterViewInit {
     );
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() {
+    fromEvent(this.saveButton.nativeElement, "click")
+      .pipe(exhaustMap(() => this.saveCourses(this.form.value)))
+      .subscribe();
+  }
 
   close() {
     this.dialogRef.close();
