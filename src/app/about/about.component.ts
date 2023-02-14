@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from "@angular/core";
+import { create } from "domain";
 import { response } from "express";
 import {
   concat,
@@ -25,10 +26,16 @@ export class AboutComponent implements OnInit {
   ngOnInit() {
     const interval1$ = interval(1000);
 
-    const interval2$ = interval1$.pipe(map((val) => 10 * val));
+    const sub = interval1$.subscribe(console.log);
 
-    const result$ = merge(interval1$, interval2$);
+    setTimeout(() => sub.unsubscribe(), 5000);
 
-    result$.subscribe(console.log);
+    const http$ = createHttpObservable("/api/courses");
+
+    const sub1 = http$.subscribe(console.log);
+
+    setTimeout(() => sub1.unsubscribe, 0); // immediately calling the unsubscribe but in a different JS VM turn, we set the timeout to 0.
+    // this way the browser will have the oppurtunity to trigger the ajax requst but the ajax request will be cancelled straight away.
+    // The result, we should see a cancelled request in the network dev tools.
   }
 }
