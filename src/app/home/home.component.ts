@@ -11,6 +11,7 @@ import {
   tap,
 } from "rxjs/operators";
 import { createHttpObservable } from "../common/util";
+import { Store } from "../common/store.service";
 
 @Component({
   selector: "home",
@@ -20,6 +21,8 @@ import { createHttpObservable } from "../common/util";
 export class HomeComponent implements OnInit {
   beginnerCourses$: Observable<Course[]>;
   advancedCourses$: Observable<Course[]>;
+
+  constructor(private store: Store) {}
 
   ngOnInit() {
     const http$ = createHttpObservable("/api/courses");
