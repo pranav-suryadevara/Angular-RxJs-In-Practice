@@ -25,16 +25,10 @@ export class HomeComponent implements OnInit {
     const http$ = createHttpObservable("/api/courses");
 
     const courses$: Observable<Course[]> = http$.pipe(
-      catchError((err) => {
-        console.log("Error Occurred ", err);
-        return throwError(err);
-      }),
-      finalize(() => {
-        console.log("Finalized Executed");
-      }),
       tap(() => console.log("HTTP request executed.")),
       map((res) => Object.values(res["payload"])),
-      shareReplay()
+      shareReplay(),
+      retryWhen((errors) => errors.pipe(delayWhen(() => timer(2000))))
     );
 
     this.beginnerCourses$ = courses$.pipe(
@@ -48,13 +42,5 @@ export class HomeComponent implements OnInit {
         courses.filter((course) => course.category === "ADVANCED")
       )
     );
-
-    // courses$.subscribe(
-    //   (courses) => {
-    //     console.log(courses);
-    //   },
-    //   noop, // () => {},  we can use noop instead of empty callback
-    //   () => console.log("completed")
-    // );
   }
 }
