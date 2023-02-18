@@ -44,41 +44,20 @@ export class CourseComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.courseId = this.route.snapshot.params["id"];
 
-    this.course$ = createHttpObservable(`/api/courses/${this.courseId}`);
+    this.course$ = createHttpObservable(`/api/courses/${this.courseId}`).pipe(
+      tap((course) => console.log("course ", course))
+    );
   }
 
   ngAfterViewInit() {
-    // this.lessons$ = fromEvent<any>(this.input.nativeElement, "keyup").pipe(
-    //   map((event) => event.target.value),
-    //   startWith(""),
-    //   debounceTime(400),
-    //   distinctUntilChanged(),
-    //   switchMap((search) => this.loadLessons(search))
-    // );
-
-    // fromEvent<any>(this.input.nativeElement, "keyup")
-    //   .pipe(
-    //     map((event) => event.target.value),
-    //     startWith(""),
-    //     debounceTime(400)
-    //   )
-    //   .subscribe(console.log);
-
-    // fromEvent<any>(this.input.nativeElement, "keyup")
-    //   .pipe(
-    //     map((event) => event.target.value),
-    //     startWith(""),
-    //     throttle(() => interval(500))
-    //   )
-    //   .subscribe(console.log);
-
-    fromEvent<any>(this.input.nativeElement, "keyup")
-      .pipe(
-        map((event) => event.target.value),
-        startWith(""),
-        throttleTime(500)
-      )
-      .subscribe(console.log);
+    this.lessons$ = fromEvent<any>(this.input.nativeElement, "keyup").pipe(
+      map((event) => event.target.value),
+      startWith(""),
+      tap((search) => console.log("search ", search)),
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap((search) => this.loadLessons(search))
+    );
   }
 
   loadLessons(search = ""): Observable<Lesson[]> {
