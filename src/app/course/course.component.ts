@@ -21,6 +21,8 @@ import {
   shareReplay,
   throttle,
   throttleTime,
+  first,
+  take,
 } from "rxjs/operators";
 import { merge, fromEvent, Observable, concat, interval, forkJoin } from "rxjs";
 import { Lesson } from "../model/lesson";
@@ -46,17 +48,11 @@ export class CourseComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.courseId = this.route.snapshot.params["id"];
 
-    const course$ = this.store.selectCourseById(this.courseId);
-    const lessons$ = this.loadLessons();
+    this.course$ = this.store.selectCourseById(this.courseId).pipe(first());
+    // this.course$ = this.store.selectCourseById(this.courseId).pipe(take(2));
+    this.lessons$ = this.loadLessons();
 
-    forkJoin(course$, lessons$)
-      .pipe(
-        tap(([course, lessons]) => {
-          console.log("course ", course);
-          console.log("lessons ", lessons);
-        })
-      )
-      .subscribe();
+    forkJoin(this.course$, this.lessons$).subscribe(console.log);
   }
 
   ngAfterViewInit() {
